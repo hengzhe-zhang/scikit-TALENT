@@ -297,6 +297,10 @@ class DeepClassifier(BaseEstimator, ClassifierMixin):
         # mock
         self.method.model.load_state_dict = lambda x: x
         standard_load = pickle.load
+        standard_torch_load = torch.load
+        torch.load = lambda x: {
+            "params": None,
+        }
         pickle.load = lambda x: self.method.model
 
         if self.model_type in classical_models:
@@ -317,6 +321,7 @@ class DeepClassifier(BaseEstimator, ClassifierMixin):
 
         # restore
         pickle.load = standard_load
+        torch.load = standard_torch_load
         return prediction
 
     def get_params(self, deep=True):
