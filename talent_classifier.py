@@ -1,9 +1,9 @@
 import json
 import os
 import os.path as osp
-import pickle
 import sys
 from pprint import pprint
+from unittest.mock import patch
 
 os.environ["TQDM_DISABLE"] = "1"
 
@@ -261,25 +261,17 @@ class DeepClassifier(BaseEstimator, ClassifierMixin):
             info["task_type"] = "binclass"
         self.info = info
         method = get_method(self.model_type)(self, info["task_type"] == "regressor")
-        # mock
-        standard_torch_save = torch.save
-        standard_torch_load = torch.load
-        torch.save = lambda x, y: None
-        torch.load = lambda x: {
-            "params": None,
-        }
-        standard_dump = pickle.dump
-        pickle.dump = lambda x, y: print("skip")
-        disable_print()
-        time_cost = method.fit(train_data, info, train=True, config=self.config)
-        enable_print()
+
+        with (
+            patch("torch.save", lambda x, y: None),
+            patch("torch.load", lambda x: {"params": None}),
+            patch("pickle.dump", lambda x, y: None),
+        ):
+            disable_print()
+            time_cost = method.fit(train_data, info, train=True, config=self.config)
+            enable_print()
         self.method = method
         self.default_y = np.unique(y)
-
-        # restore
-        pickle.dump = standard_dump
-        torch.save = standard_torch_save
-        torch.load = standard_torch_load
 
     def predict(self, X):
         """
@@ -294,23 +286,23 @@ class DeepClassifier(BaseEstimator, ClassifierMixin):
             categorical_features=self.categorical_indicator,
             default_y=self.default_y,
         )
-        # mock
-        self.method.model.load_state_dict = lambda x: x
-        standard_load = pickle.load
-        standard_torch_load = torch.load
-        torch.load = lambda x: {
-            "params": None,
-        }
-        pickle.load = lambda x: self.method.model
 
-        if self.model_type in classical_models:
-            metric_values, metric_name, predict_logits = self.method.predict(
-                test_data, self.info, model_name=self.evaluate_option
-            )
-        else:
-            val_res, metric_values, metric_name, predict_logits = self.method.predict(
-                test_data, self.info, model_name=self.evaluate_option
-            )
+        with (
+            patch("torch.load", lambda x: {"params": None}),
+            patch("pickle.load", lambda x: self.method.model),
+        ):
+            self.method.model.load_state_dict = lambda x: x
+
+            if self.model_type in classical_models:
+                metric_values, metric_name, predict_logits = self.method.predict(
+                    test_data, self.info, model_name=self.evaluate_option
+                )
+            else:
+                val_res, metric_values, metric_name, predict_logits = (
+                    self.method.predict(
+                        test_data, self.info, model_name=self.evaluate_option
+                    )
+                )
         if len(np.shape(predict_logits)) == 2:
             # probabilistic output
             prediction = np.argmax(predict_logits, axis=1)
@@ -319,9 +311,6 @@ class DeepClassifier(BaseEstimator, ClassifierMixin):
         prediction = self.method.label_encoder.inverse_transform(prediction)
         prediction = self.label_encoder.inverse_transform(prediction)
 
-        # restore
-        pickle.load = standard_load
-        torch.load = standard_torch_load
         return prediction
 
     def get_params(self, deep=True):
