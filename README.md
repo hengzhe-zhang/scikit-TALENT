@@ -1,16 +1,16 @@
-# Scikit-Talent
+# Scikit-TALENT
 
-**Scikit-Talent** is a scikit-compatible wrapper that enables the use of state-of-the-art deep learning models for
+🚀 **Scikit-TALENT** 🚀 is a scikit-compatible wrapper that enables the use of state-of-the-art deep learning models for
 tabular data with minimal effort and no learning curve.
 
-## Features
+## ✨ Features
 
 - Seamlessly integrates with scikit-learn
 - Supports deep learning-based classifiers for tabular data
 - Enables quick experimentation with modern deep learning models
 - Built-in hyperparameter tuning using Optuna
 
-## Usage
+## 🛠️ Usage
 
 ### Basic Example
 
@@ -45,7 +45,7 @@ score = balanced_accuracy_score(y_test, predictions)
 print(f"{model}: Balanced Accuracy Score = {score}")
 ```
 
-## Hyperparameter Tuning
+## 🎯 Hyperparameter Tuning
 
 Hyperparameter tuning is supported via Optuna, allowing automatic optimization of model parameters.
 
