@@ -5,6 +5,7 @@ import sys
 from pprint import pprint
 from unittest.mock import patch
 
+
 os.environ["TQDM_DISABLE"] = "1"
 
 import numpy as np
@@ -80,9 +81,9 @@ class DeepClassifier(BaseEstimator, ClassifierMixin):
         self.talent_path = talent_path
         # Load default arguments from JSON config
         if model_type in classical_models:
-            path = f"{talent_path}/configs/classical_configs.json"
+            path = f"{self.talent_path}/configs/classical_configs.json"
         else:
-            path = f"{talent_path}/configs/deep_configs.json"
+            path = f"{self.talent_path}/configs/deep_configs.json"
         with open(path, "r") as file:
             default_args = json.load(file)
 
@@ -313,34 +314,6 @@ class DeepClassifier(BaseEstimator, ClassifierMixin):
         prediction = self.label_encoder.inverse_transform(prediction)
 
         return prediction
-
-    def get_params(self, deep=True):
-        """
-        Get parameters for this estimator.
-        This is necessary for sklearn compatibility, especially for hyperparameter tuning.
-        """
-        return {
-            "dataset": self.dataset,
-            "model_type": self.model_type,
-            "max_epoch": self.max_epoch,
-            "batch_size": self.batch_size,
-            "normalization": self.normalization,
-            "num_nan_policy": self.num_nan_policy,
-            "cat_nan_policy": self.cat_nan_policy,
-            "cat_policy": self.cat_policy,
-            "num_policy": self.num_policy,
-            "n_bins": self.n_bins,
-            "cat_min_frequency": self.cat_min_frequency,
-            "n_trials": self.n_trials,
-            "seed_num": self.seed_num,
-            "workers": self.workers,
-            "gpu": self.gpu,
-            "tune": self.tune,
-            "retune": self.retune,
-            "evaluate_option": self.evaluate_option,
-            "dataset_path": self.dataset_path,
-            "model_path": self.model_path,
-        }
 
     def set_params(self, **params):
         """
