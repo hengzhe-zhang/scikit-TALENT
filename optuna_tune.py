@@ -1,9 +1,9 @@
 import optunahub
 import torch
+from sklearn.base import RegressorMixin
 from sklearn.metrics import balanced_accuracy_score, r2_score
 
 from experiment.scikit_talent.talent_classifier import DeepClassifier
-from experiment.scikit_talent.talent_regressor import DeepRegressor
 from model.utils import merge_sampled_parameters, sample_parameters, get_method
 
 
@@ -27,7 +27,7 @@ def tune_hyper_parameters(
     """
     import optuna.trial
 
-    is_regression = isinstance(self, DeepRegressor)
+    is_regression = isinstance(self, RegressorMixin)
 
     list_variables = set()
     for k, v in opt_space[self.model_type]["model"].items():

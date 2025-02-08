@@ -79,9 +79,9 @@ class DeepClassifier(BaseEstimator, ClassifierMixin):
         """
         # Load default arguments from JSON config
         if model_type in classical_models:
-            path = "LAMDA-TALENT/LAMDA_TALENT/configs/classical_configs.json"
+            path = f"{talent_path}/configs/classical_configs.json"
         else:
-            path = "LAMDA-TALENT/LAMDA_TALENT/configs/deep_configs.json"
+            path = f"{talent_path}/configs/deep_configs.json"
         with open(path, "r") as file:
             default_args = json.load(file)
 

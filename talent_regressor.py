@@ -10,7 +10,12 @@ from data_loader import (
     convert_test,
     generate_info,
 )
-from talent_classifier import DeepClassifier, classical_models
+from talent_classifier import (
+    DeepClassifier,
+    classical_models,
+    disable_print,
+    enable_print,
+)
 from model.utils import get_method
 
 
@@ -98,7 +103,9 @@ class DeepRegressor(DeepClassifier, RegressorMixin):
         method = get_method(self.model_type)(self, is_regression=True)
 
         # Fit the model using the training data
+        disable_print()
         time_cost = method.fit(train_val_data, info, train=True)
+        enable_print()
         self.method = method
 
         return self
@@ -119,14 +126,20 @@ class DeepRegressor(DeepClassifier, RegressorMixin):
 
         # Make predictions
         if self.model_type in classical_models:
-            _, _, predict_logits = self.method.predict(
+            _, _, prediction = self.method.predict(
                 test_data, self.info, model_name=self.evaluate_option
             )
         else:
-            _, _, _, predict_logits = self.method.predict(
+            _, _, _, prediction = self.method.predict(
                 test_data, self.info, model_name=self.evaluate_option
             )
-        return predict_logits.flatten()
+
+        prediction_flatten = prediction.flatten()
+        if hasattr(self.method, "y_info"):
+            prediction_flatten = (
+                prediction * self.method.y_info["std"] + self.method.y_info["mean"]
+            )
+        return prediction_flatten
 
 
 if __name__ == "__main__":
