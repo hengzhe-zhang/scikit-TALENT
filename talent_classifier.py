@@ -84,8 +84,13 @@ class DeepClassifier(BaseEstimator, ClassifierMixin):
             path = f"{self.talent_path}/configs/classical_configs.json"
         else:
             path = f"{self.talent_path}/configs/deep_configs.json"
-        with open(path, "r") as file:
-            default_args = json.load(file)
+        try:
+            with open(path, "r") as file:
+                default_args = json.load(file)
+        except Exception:
+            current_dir = os.getcwd()
+            print(f"Error loading JSON from {path}. Current directory: {current_dir}")
+            raise
 
         # Assign parameters, using defaults where necessary
         self.dataset = dataset if dataset is not None else default_args.get("dataset")
@@ -314,15 +319,6 @@ class DeepClassifier(BaseEstimator, ClassifierMixin):
         prediction = self.label_encoder.inverse_transform(prediction)
 
         return prediction
-
-    def set_params(self, **params):
-        """
-        Set the parameters of this estimator.
-        This is necessary for sklearn compatibility, especially for hyperparameter tuning.
-        """
-        for key, value in params.items():
-            setattr(self, key, value)
-        return self
 
 
 if __name__ == "__main__":
