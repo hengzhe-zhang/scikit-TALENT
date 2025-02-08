@@ -77,6 +77,7 @@ class DeepClassifier(BaseEstimator, ClassifierMixin):
         Initialize the DeepModelEstimator with given parameters.
         Parameters not provided will be loaded from configuration files.
         """
+        self.talent_path = talent_path
         # Load default arguments from JSON config
         if model_type in classical_models:
             path = f"{talent_path}/configs/classical_configs.json"
