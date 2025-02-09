@@ -1,4 +1,5 @@
 from typing import Optional, List
+from unittest.mock import patch
 
 import numpy as np
 import openml
@@ -102,8 +103,13 @@ class DeepRegressor(DeepClassifier, RegressorMixin):
         method = get_method(self.model_type)(self, is_regression=True)
 
         # Fit the model using the training data
-        with SuppressPrint():
-            time_cost = method.fit(train_val_data, info, train=True)
+        with (
+            patch("torch.save", lambda x, y: None),
+            patch("torch.load", lambda x: {"params": None}),
+            patch("pickle.dump", lambda x, y: None),
+        ):
+            with SuppressPrint():
+                time_cost = method.fit(train_val_data, info, train=True)
 
         self.method = method
 
@@ -124,14 +130,19 @@ class DeepRegressor(DeepClassifier, RegressorMixin):
         )
 
         # Make predictions
-        if self.model_type in classical_models:
-            _, _, prediction = self.method.predict(
-                test_data, self.info, model_name=self.evaluate_option
-            )
-        else:
-            _, _, _, prediction = self.method.predict(
-                test_data, self.info, model_name=self.evaluate_option
-            )
+        with (
+            patch("torch.load", lambda x: {"params": None}),
+            patch("pickle.load", lambda x: self.method.model),
+        ):
+            with patch.object(self.method.model, "load_state_dict", lambda x: x):
+                if self.model_type in classical_models:
+                    _, _, prediction = self.method.predict(
+                        test_data, self.info, model_name=self.evaluate_option
+                    )
+                else:
+                    _, _, _, prediction = self.method.predict(
+                        test_data, self.info, model_name=self.evaluate_option
+                    )
 
         prediction_flatten = prediction.flatten()
         if hasattr(self.method, "y_info"):
