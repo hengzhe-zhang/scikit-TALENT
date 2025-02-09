@@ -24,14 +24,14 @@ from data_loader import (
 from model.utils import get_method, set_gpu, set_seeds, mkdir
 
 
-# Disable print
-def disable_print():
-    sys.stdout = open(os.devnull, "w")
+class SuppressPrint:
+    def __enter__(self):
+        self._original_stdout = sys.stdout  # Save original stdout
+        sys.stdout = open(os.devnull, "w")  # Redirect stdout to null
 
-
-# Enable print
-def enable_print():
-    sys.stdout = sys.__stdout__
+    def __exit__(self, exc_type, exc_value, traceback):
+        sys.stdout.close()  # Close the null output stream
+        sys.stdout = self._original_stdout  # Restore stdout
 
 
 classical_models = [
@@ -274,9 +274,8 @@ class DeepClassifier(BaseEstimator, ClassifierMixin):
             patch("torch.load", lambda x: {"params": None}),
             patch("pickle.dump", lambda x, y: None),
         ):
-            disable_print()
-            time_cost = method.fit(train_data, info, train=True, config=self.config)
-            enable_print()
+            with SuppressPrint():
+                time_cost = method.fit(train_data, info, train=True, config=self.config)
         self.method = method
         self.default_y = np.unique(y)
 

@@ -13,8 +13,7 @@ from data_loader import (
 from talent_classifier import (
     DeepClassifier,
     classical_models,
-    disable_print,
-    enable_print,
+    SuppressPrint,
 )
 from model.utils import get_method
 
@@ -103,9 +102,9 @@ class DeepRegressor(DeepClassifier, RegressorMixin):
         method = get_method(self.model_type)(self, is_regression=True)
 
         # Fit the model using the training data
-        disable_print()
-        time_cost = method.fit(train_val_data, info, train=True)
-        enable_print()
+        with SuppressPrint():
+            time_cost = method.fit(train_val_data, info, train=True)
+
         self.method = method
 
         return self
