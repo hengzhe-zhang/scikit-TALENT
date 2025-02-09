@@ -84,13 +84,8 @@ class DeepClassifier(BaseEstimator, ClassifierMixin):
             path = f"{self.talent_path}/configs/classical_configs.json"
         else:
             path = f"{self.talent_path}/configs/deep_configs.json"
-        try:
-            with open(path, "r") as file:
-                default_args = json.load(file)
-        except Exception:
-            current_dir = os.getcwd()
-            print(f"Error loading JSON from {path}. Current directory: {current_dir}")
-            raise
+        with open(path, "r") as file:
+            default_args = json.load(file)
 
         # Assign parameters, using defaults where necessary
         self.dataset = dataset if dataset is not None else default_args.get("dataset")
