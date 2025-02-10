@@ -134,15 +134,11 @@ class DeepRegressor(DeepClassifier, RegressorMixin):
             patch("torch.load", lambda x: {"params": None}),
             patch("pickle.load", lambda x: self.method.model),
         ):
-            with patch.object(self.method.model, "load_state_dict", lambda x: x):
-                if self.model_type in classical_models:
-                    _, _, prediction = self.method.predict(
-                        test_data, self.info, model_name=self.evaluate_option
-                    )
-                else:
-                    _, _, _, prediction = self.method.predict(
-                        test_data, self.info, model_name=self.evaluate_option
-                    )
+            if hasattr(self.method.model, "load_state_dict"):
+                with patch.object(self.method.model, "load_state_dict", lambda x: x):
+                    prediction = self.make_prediction(test_data)
+            else:
+                prediction = self.make_prediction(test_data)
 
         prediction_flatten = prediction.flatten()
         if hasattr(self.method, "y_info"):
@@ -150,6 +146,17 @@ class DeepRegressor(DeepClassifier, RegressorMixin):
                 prediction * self.method.y_info["std"] + self.method.y_info["mean"]
             )
         return prediction_flatten
+
+    def make_prediction(self, test_data):
+        if self.model_type in classical_models:
+            _, _, prediction = self.method.predict(
+                test_data, self.info, model_name=self.evaluate_option
+            )
+        else:
+            _, _, _, prediction = self.method.predict(
+                test_data, self.info, model_name=self.evaluate_option
+            )
+        return prediction
 
 
 if __name__ == "__main__":
