@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import Optional, List, Union
 from unittest.mock import patch
 
 import numpy as np
@@ -11,6 +11,7 @@ from data_loader import (
     convert_test,
     generate_info,
 )
+from model.models.modernNCA import ModernNCA
 from talent_classifier import (
     DeepClassifier,
     classical_models,
@@ -148,6 +149,7 @@ class DeepRegressor(DeepClassifier, RegressorMixin):
         return prediction_flatten
 
     def make_prediction(self, test_data):
+        self.method: Union[ModernNCA]
         if self.model_type in classical_models:
             _, _, prediction = self.method.predict(
                 test_data, self.info, model_name=self.evaluate_option
