@@ -134,6 +134,7 @@ class DeepRegressor(DeepClassifier, RegressorMixin):
         with (
             patch("torch.load", lambda x: {"params": None}),
             patch("pickle.load", lambda x: self.method.model),
+            patch.object(self.method, "metric", lambda x, y, z: (tuple(), tuple())),
         ):
             if hasattr(self.method.model, "load_state_dict"):
                 with patch.object(self.method.model, "load_state_dict", lambda x: x):

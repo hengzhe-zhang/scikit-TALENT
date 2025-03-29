@@ -301,17 +301,16 @@ class DeepClassifier(BaseEstimator, ClassifierMixin):
         with (
             patch("torch.load", lambda x: {"params": None}),
             patch("pickle.load", lambda x: self.method.model),
+            patch.object(self.method, "metric", lambda x, y, z: (tuple(), tuple())),
         ):
             with patch_if_exist(self.method.model, "load_state_dict", lambda x: x):
                 if self.model_type in classical_models:
-                    metric_values, metric_name, predict_logits = self.method.predict(
+                    _, _, predict_logits = self.method.predict(
                         test_data, self.info, model_name=self.evaluate_option
                     )
                 else:
-                    val_res, metric_values, metric_name, predict_logits = (
-                        self.method.predict(
-                            test_data, self.info, model_name=self.evaluate_option
-                        )
+                    _, _, _, predict_logits = self.method.predict(
+                        test_data, self.info, model_name=self.evaluate_option
                     )
         if len(np.shape(predict_logits)) == 2:
             # probabilistic output
