@@ -211,6 +211,7 @@ def tune_hyper_parameters(
     study.optimize(
         objective,
         **{"n_trials": self.n_trials},
+        timeout=8 * 3600,  # 8 hours
     )
     # get best configs
     best_trial_id = study.best_trial.number

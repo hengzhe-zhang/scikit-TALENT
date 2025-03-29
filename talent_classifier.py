@@ -5,23 +5,23 @@ import sys
 from pprint import pprint
 from unittest.mock import patch
 
-
 os.environ["TQDM_DISABLE"] = "1"
+
+from contextlib import contextmanager
 
 import numpy as np
 import openml
 import torch
+from data_loader import (
+    convert_test,
+    generate_info,
+    split_train_val,
+)
+from model.utils import get_method, mkdir, set_gpu, set_seeds
 from sklearn.base import BaseEstimator, ClassifierMixin  # or RegressorMixin
 from sklearn.metrics import balanced_accuracy_score
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
-
-from data_loader import (
-    split_train_val,
-    convert_test,
-    generate_info,
-)
-from model.utils import get_method, set_gpu, set_seeds, mkdir
 
 
 class SuppressPrint:
@@ -32,6 +32,16 @@ class SuppressPrint:
     def __exit__(self, exc_type, exc_value, traceback):
         sys.stdout.close()  # Close the null output stream
         sys.stdout = self._original_stdout  # Restore stdout
+
+
+@contextmanager
+def patch_if_exist(obj, attr, new):
+    """Patch an attribute if it exists on the given object."""
+    if hasattr(obj, attr):
+        with patch.object(obj, attr, new) as p:
+            yield p
+    else:
+        yield None
 
 
 classical_models = [
@@ -292,7 +302,7 @@ class DeepClassifier(BaseEstimator, ClassifierMixin):
             patch("torch.load", lambda x: {"params": None}),
             patch("pickle.load", lambda x: self.method.model),
         ):
-            with patch.object(self.method.model, "load_state_dict", lambda x: x):
+            with patch_if_exist(self.method.model, "load_state_dict", lambda x: x):
                 if self.model_type in classical_models:
                     metric_values, metric_name, predict_logits = self.method.predict(
                         test_data, self.info, model_name=self.evaluate_option
