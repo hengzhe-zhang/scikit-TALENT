@@ -17,7 +17,7 @@ from data_loader import (
     generate_info,
     split_train_val,
 )
-from model.utils import get_method, mkdir, set_gpu, set_seeds
+from TALENT.model.utils import get_method, mkdir, set_gpu, set_seeds
 from sklearn.base import BaseEstimator, ClassifierMixin  # or RegressorMixin
 from sklearn.metrics import balanced_accuracy_score
 from sklearn.model_selection import train_test_split

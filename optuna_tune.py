@@ -4,7 +4,7 @@ from sklearn.base import RegressorMixin
 from sklearn.metrics import balanced_accuracy_score, r2_score
 
 from experiment.scikit_talent.talent_classifier import DeepClassifier
-from model.utils import merge_sampled_parameters, sample_parameters, get_method
+from TALENT.model.utils import merge_sampled_parameters, sample_parameters, get_method
 
 
 def tune_hyper_parameters(

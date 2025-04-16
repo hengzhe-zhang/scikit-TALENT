@@ -11,13 +11,13 @@ from data_loader import (
     convert_test,
     generate_info,
 )
-from model.models.modernNCA import ModernNCA
+from TALENT.model.models.modernNCA import ModernNCA
 from talent_classifier import (
     DeepClassifier,
     classical_models,
     SuppressPrint,
 )
-from model.utils import get_method
+from TALENT.model.utils import get_method
 
 
 class DeepRegressor(DeepClassifier, RegressorMixin):
