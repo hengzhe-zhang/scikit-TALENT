@@ -43,7 +43,7 @@ class DeepRegressor(DeepClassifier, RegressorMixin):
         evaluate_option: Optional[str] = None,
         dataset_path: Optional[str] = None,
         model_path: Optional[str] = None,
-        talent_path: str = "LAMDA-TALENT/LAMDA_TALENT",
+        talent_path: str = "LAMDA-TALENT/TALENT",
     ):
         """
         Initialize the DeepRegressorEstimator with given parameters.

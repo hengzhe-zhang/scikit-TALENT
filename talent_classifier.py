@@ -82,7 +82,7 @@ class DeepClassifier(BaseEstimator, ClassifierMixin):
         evaluate_option=None,
         dataset_path=None,
         model_path=None,
-        talent_path="LAMDA-TALENT/LAMDA_TALENT",
+        talent_path="LAMDA-TALENT/TALENT",
     ):
         """
         Initialize the DeepModelEstimator with given parameters.
