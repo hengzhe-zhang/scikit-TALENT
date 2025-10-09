@@ -82,6 +82,7 @@ class DeepClassifier(BaseEstimator, ClassifierMixin):
         evaluate_option=None,
         dataset_path=None,
         model_path=None,
+        use_float=None,
         talent_path="LAMDA-TALENT/TALENT",
     ):
         """
@@ -182,6 +183,9 @@ class DeepClassifier(BaseEstimator, ClassifierMixin):
         )
         self.model_path = (
             model_path if model_path is not None else default_args.get("model_path")
+        )
+        self.use_float = (
+            use_float if use_float is not None else default_args.get("use_float")
         )
 
         # Set up GPU
