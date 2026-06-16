@@ -110,7 +110,9 @@ class DeepRegressor(DeepClassifier, RegressorMixin):
             patch("pickle.dump", lambda x, y: None),
         ):
             with SuppressPrint():
-                time_cost = method.fit(train_val_data, info, train=True)
+                time_cost = method.fit(
+                    train_val_data, info, train=True, config=self.config
+                )
 
         self.method = method
 

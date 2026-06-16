@@ -218,7 +218,8 @@ def tune_hyper_parameters(
     # update config files
     print("Best Hyper-Parameters")
     print(trial_configs[best_trial_id])
-    # update config
+    # update config and refit so self.method matches best trial (not last trial)
     self.config = trial_configs[best_trial_id]
+    self.fit(x_train, y_train, categorical_indicator=categorical_indicator)
 
     return self
