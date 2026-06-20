@@ -203,7 +203,7 @@ def tune_hyper_parameters(
     trial_configs = []
     # Load HEBO Sampler from OptunaHub
     module = optunahub.load_module("samplers/hebo")
-    sampler = module.HEBOSampler()
+    sampler = module.HEBOSampler(seed=0)
     study = optuna.create_study(
         direction=direction,
         sampler=sampler,
