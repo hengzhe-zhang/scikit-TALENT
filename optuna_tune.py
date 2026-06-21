@@ -219,6 +219,5 @@ def tune_hyper_parameters(
     print("Best Hyper-Parameters")
     print(trial_configs[best_trial_id])
     self.config = trial_configs[best_trial_id]
-    self.method = None
 
     return self
