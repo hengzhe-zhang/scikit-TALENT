@@ -1,4 +1,4 @@
-from typing import Optional, List, Union
+from typing import List, Union
 from unittest.mock import patch
 
 import numpy as np
@@ -21,58 +21,6 @@ from TALENT.model.utils import get_method
 
 
 class DeepRegressor(DeepClassifier, RegressorMixin):
-    def __init__(
-        self,
-        dataset: Optional[str] = None,
-        model_type: Optional[str] = None,
-        max_epoch: Optional[int] = None,
-        batch_size: Optional[int] = None,
-        normalization: Optional[str] = None,
-        num_nan_policy: Optional[str] = None,
-        cat_nan_policy: Optional[str] = None,
-        cat_policy: Optional[str] = None,
-        num_policy: Optional[str] = None,
-        n_bins: Optional[int] = None,
-        cat_min_frequency: Optional[float] = None,
-        n_trials: Optional[int] = None,
-        seed_num: Optional[int] = None,
-        workers: Optional[int] = None,
-        gpu: Optional[int] = None,
-        tune: bool = False,
-        retune: bool = False,
-        evaluate_option: Optional[str] = None,
-        dataset_path: Optional[str] = None,
-        model_path: Optional[str] = None,
-        talent_path: str = "LAMDA-TALENT/TALENT",
-    ):
-        """
-        Initialize the DeepRegressorEstimator with given parameters.
-        Parameters not provided will be loaded from configuration files.
-        """
-        super().__init__(
-            dataset=dataset,
-            model_type=model_type,
-            max_epoch=max_epoch,
-            batch_size=batch_size,
-            normalization=normalization,
-            num_nan_policy=num_nan_policy,
-            cat_nan_policy=cat_nan_policy,
-            cat_policy=cat_policy,
-            num_policy=num_policy,
-            n_bins=n_bins,
-            cat_min_frequency=cat_min_frequency,
-            n_trials=n_trials,
-            seed_num=seed_num,
-            workers=workers,
-            gpu=gpu,
-            tune=tune,
-            retune=retune,
-            evaluate_option=evaluate_option,
-            dataset_path=dataset_path,
-            model_path=model_path,
-            talent_path=talent_path,
-        )
-
     def fit(self, X, y, categorical_indicator: List[bool]):
         """
         Fit the deep learning regression model.

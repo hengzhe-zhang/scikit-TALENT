@@ -57,7 +57,7 @@ def tune_hyper_parameters(
         elif self.model_type == "catboost" and torch.cuda.is_available():
             config["fit"]["logging_level"] = "Silent"
 
-        elif self.model_type == "RandomForest":
+        elif self.model_type in ("RandomForest", "ExtraTrees"):
             config["model"]["max_depth"] = 12
 
         if self.model_type in ["resnet"]:
