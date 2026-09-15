@@ -25,7 +25,7 @@ def separate_features(
 def split_train_val(
     X_train: np.ndarray,
     y_train: np.ndarray,
-    categorical_features: Optional[List[bool]],
+    categorical_features: List[bool],
     task_type: str = "regression",
     val_size: float = 0.2,
     random_state: int = 42,
