@@ -90,12 +90,8 @@ class DeepRegressor(DeepClassifier, RegressorMixin):
             else:
                 prediction = self.make_prediction(test_data)
 
-        prediction_flatten = prediction.flatten()
-        if hasattr(self.method, "y_info"):
-            prediction_flatten = (
-                prediction * self.method.y_info["std"] + self.method.y_info["mean"]
-            )
-        return prediction_flatten
+        # TALENT predict already denormalizes mean_std y. Do not scale again.
+        return prediction.flatten()
 
     def make_prediction(self, test_data):
         # Classical TALENT methods return 3 values, deep methods 4. ExtraTrees is
