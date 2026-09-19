@@ -130,6 +130,9 @@ class DeepClassifier(BaseEstimator, ClassifierMixin):
         self.num_policy = (
             num_policy if num_policy is not None else default_args.get("num_policy")
         )
+        if self.model_type == "catboost":
+            # TALENT CatBoostMethod asserts indices. Default classical_configs is ordinal.
+            self.cat_policy = "indices"
         if self.model_type in [
             "tabr",
             "modernNCA",
