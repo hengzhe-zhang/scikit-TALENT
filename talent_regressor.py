@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import List
 from unittest.mock import patch
 
 import numpy as np
@@ -11,10 +11,8 @@ from data_loader import (
     convert_test,
     generate_info,
 )
-from TALENT.model.models.modernNCA import ModernNCA
 from talent_classifier import (
     DeepClassifier,
-    classical_models,
     SuppressPrint,
 )
 from TALENT.model.utils import get_method
@@ -100,16 +98,11 @@ class DeepRegressor(DeepClassifier, RegressorMixin):
         return prediction_flatten
 
     def make_prediction(self, test_data):
-        self.method: Union[ModernNCA]
-        if self.model_type in classical_models:
-            _, _, prediction = self.method.predict(
-                test_data, self.info, model_name=self.evaluate_option
-            )
-        else:
-            _, _, _, prediction = self.method.predict(
-                test_data, self.info, model_name=self.evaluate_option
-            )
-        return prediction
+        # Classical TALENT methods return 3 values, deep methods 4. ExtraTrees is
+        # classical but may be missing from this module's classical_models copy.
+        return self.method.predict(
+            test_data, self.info, model_name=self.evaluate_option
+        )[-1]
 
 
 if __name__ == "__main__":
