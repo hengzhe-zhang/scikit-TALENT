@@ -1,3 +1,5 @@
+import os
+
 import optunahub
 import torch
 from sklearn.base import RegressorMixin
@@ -15,6 +17,7 @@ def tune_hyper_parameters(
     x_val,
     y_val,
     categorical_indicator,
+    final=None,
 ):
     """
     Tune hyper-parameters.
@@ -23,8 +26,14 @@ def tune_hyper_parameters(
     :opt_space: dict, search space
     :train_val_data: tuple, training and validation data
     :info: dict, information about the dataset
+    :final: "best" keeps the trial with the best validation score, "last" keeps
+        the last trial. Defaults to the TALENT_HPO_FINAL environment variable
+        (set to "last" by the legacy SRBench script), then "best".
     :return: argparse.Namespace, arguments
     """
+    final = final or os.environ.get("TALENT_HPO_FINAL", "best")
+    assert final in ("best", "last")
+
     import optuna.trial
 
     is_regression = isinstance(self, RegressorMixin)
@@ -165,8 +174,6 @@ def tune_hyper_parameters(
                 # same range as for non-glu activations
                 config["model"]["d_ffn_factor"] *= 2 / 3
 
-        trial_configs.append(config)
-        # method.fit(train_val_data, info, train=True, config=config)
         # run with this config
         try:
             self.config = config
@@ -177,6 +184,9 @@ def tune_hyper_parameters(
             else:
                 val_pred = self.predict(x_val)
                 result = balanced_accuracy_score(y_val, val_pred)
+            picked["last"] = (result, self.method, config)
+            if "best" not in picked or result > picked["best"][0]:
+                picked["best"] = (result, self.method, config)
             return result
         except Exception as e:
             print(e)
@@ -200,7 +210,7 @@ def tune_hyper_parameters(
 
     method = get_method(self.model_type)(self, is_regression)
 
-    trial_configs = []
+    picked = {}
     # Load HEBO Sampler from OptunaHub
     module = optunahub.load_module("samplers/hebo")
     sampler = module.HEBOSampler(seed=0)
@@ -213,11 +223,11 @@ def tune_hyper_parameters(
         **{"n_trials": self.n_trials},
         timeout=8 * 3600,  # 8 hours
     )
-    # get best configs
-    best_trial_id = study.best_trial.number
-    # update config files
+    # restore the selected trial's fitted model together with its config:
+    # self.method is left at the last trial's fit by objective()
+    if picked:
+        _, self.method, self.config = picked[final]
     print("Best Hyper-Parameters")
-    print(trial_configs[best_trial_id])
-    self.config = trial_configs[best_trial_id]
+    print(self.config)
 
     return self
